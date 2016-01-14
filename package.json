@@ -1,0 +1,19 @@
+{
+  "name": "procedural-generation-c2",
+  "version": "1.0.0",
+  "description": "For the monthly procedural generation challange (#2 - castle)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pfgithub/procedural-generation-c2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pfgithub/procedural-generation-c2/issues"
+  },
+  "homepage": "https://github.com/pfgithub/procedural-generation-c2#readme"
+}
