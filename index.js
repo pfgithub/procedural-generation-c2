@@ -55,7 +55,7 @@ function createCastle(){
     }
   });
   var size = {
-    wh: randi(50,100)
+    wh: randi(25,50)
   }
   addRoom("",center.x - size.wh,center.y - size.wh, center.x2 + size.wh, center.y2 + size.wh);
 }
