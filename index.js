@@ -65,7 +65,10 @@ var features = [ // list of building groups
         " Fort",
         " Castle",
         " Union",
-        " Commonwealth"
+        " Commonwealth",
+        " Saga",
+        " Universe",
+        " Port"
       ]
       return arr1[randi(0,arr1.length - 1)] + arr2[randi(0,arr2.length - 1)] + arr3[randi(0,arr3.length - 1)];
     },
