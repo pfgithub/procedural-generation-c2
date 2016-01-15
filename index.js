@@ -26,8 +26,8 @@ var features = [ // list of building groups
         "ammount": new Ammount(1,5),
         "subgroups": [
           {
-            "name": "House", // third subgroup layer has graphical trouble caused by Y2 position being NAN
-            "size": new Size(10,20),
+            "name": "House", // how to fail json
+            "size": new Size(10,20,10,20),
             "ammount": new Ammount(10,20),
             "subgroups": []
           }
@@ -43,7 +43,7 @@ function log(){
   // TODO uncomment the line below to enable logging to console (too lazy to add --verbose)
   //console.log.apply(undefined,arguments)
 }
-function generateSubgroup(bg,arr,w,h){ // Generate a group of building, for example the main castle or villages
+function generateSubgroup(bg,arr,w,h){ // Generate a group of buildings, for example the main castle or villages
   log("Generating Subgroup ", bg);
   bg.forEach(function(building){
     var ammount = building.ammount.get();
@@ -159,7 +159,7 @@ function drawCastle(data,origx,origy){
 generateSubgroup(features,rooms,1000,1000);
 
 
-log(JSON.stringify(rooms));
+//console.log(JSON.stringify(rooms));
 drawCastle(rooms,0,0);
 save();
 //log(randi(0,50));
