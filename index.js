@@ -2,7 +2,7 @@ var fs = require('fs')
   , gm = require('gm').subClass({imageMagick: true});
 
 
-var image = gm('./resources/blueprint.jpg').noProfile().resize(1000,1000,"!").fontSize(10);
+var image = gm('./resources/blueprint.jpg').noProfile().resize(1000,1000,"!").fontSize(20);
 //var rooms = [
 //]
 /*var features = {
@@ -18,20 +18,88 @@ var features = [ // list of building groups
   {
     "name": "Castle",
     "size": new Size(300,700,300,700),
-    "ammount": new Ammount(1,2),
+    "ammount": new Ammount(1,4),
+    "nameCallback": function(){
+      arr1 = [
+        "Fire",
+        "Hut",
+        "Ice",
+        "Townspeople",
+        "Forceful",
+        "Bacon",
+        "Boom",
+        "Howling",
+        "Ghost",
+        "Epic",
+        "Roman",
+        "Sweet",
+        "Money",
+        "Strong",
+        "Fiver",
+        "Wobbly",
+        "Power",
+        "Empire",
+        "Mega",
+        "Ultra",
+        "Edge",
+        "Wolfen",
+        "Gruber",
+        "Monkey"
+      ];
+      arr2 = [
+        "wolf",
+        "tech",
+        "ingham",
+        "verse",
+        "star",
+        "dragon",
+        "stein",
+        "birds",
+        "limit",
+        " Edge",
+        "farmers"
+      ]
+      arr3 = [
+        " Rock",
+        " Empire",
+        " Fort",
+        " Castle",
+        " Union",
+        " Commonwealth"
+      ]
+      return arr1[randi(0,arr1.length - 1)] + arr2[randi(0,arr2.length - 1)] + arr3[randi(0,arr3.length - 1)];
+    },
     "subgroups": [
       {
-        "name": "Village",
+        "name": "Blacksmith", // how to fail json
         "size": new Size(50,100,50,100),
-        "ammount": new Ammount(1,5),
-        "subgroups": [
-          {
-            "name": "House", // how to fail json
-            "size": new Size(10,20,10,20),
-            "ammount": new Ammount(10,20),
-            "subgroups": []
-          }
-        ]
+        "ammount": new Ammount(1,2),
+        "subgroups": []
+      },
+      {
+        "name": "Tower", // how to fail json
+        "size": new Size(50,100,50,100),
+        "ammount": new Ammount(1,2),
+        "subgroups": []
+      },
+      {
+        "name": "House", // how to fail json
+        "size": new Size(30,50,30,50),
+        "ammount": new Ammount(10,20),
+        "draw": function(name,x,y,w,h){
+          log(name,x,y,w,h);
+          var halfupdown = (h/2)+y
+          var halfleftright = (w/2)+x
+          var housein = 10;
+
+          image.stroke("#ffffff").fill('none')
+            //.drawRectangle(x,y,x+w,y+h) // debug
+            .drawLine(x,halfupdown,halfleftright,y) // roof / line
+            .drawLine(x+w,halfupdown,halfleftright,y) // roof \ line
+            .drawLine(x+w,halfupdown,x,halfupdown) // roof _ line
+            .drawRectangle(x+housein,halfupdown,x+w-housein,y+h); // building
+        },
+        "subgroups": []
       }
     ]
   }
@@ -68,7 +136,7 @@ function generateSubgroup(bg,arr,w,h){ // Generate a group of buildings, for exa
       if(!endall)
       {generateSubgroup(
         building.subgroups,
-        registerRoom(arr,building.name,pos.x,pos.y,pos.x2,pos.y2),
+        registerRoom(arr,building.name,pos.x,pos.y,pos.x2,pos.y2, building.draw ? building.draw : undefined, building.nameCallback ? building.nameCallback : undefined),
         pos.x2-pos.x,
         pos.y2-pos.y
       );}
@@ -98,10 +166,15 @@ function testCollision(arr,x,y,x2,y2){
   var count = 0;
   arr.forEach(function(pos){
     var cx = pos.position.x;
-    var cy = pos.position.x;
+    var cy = pos.position.y;
     var cx2 = pos.position.x2;
     var cy2 = pos.position.y2;
-    if(x >= cx && y >= cy && x2 <= cx2 && y2 <= cy2){
+    if(
+      x < cx2 &&
+      x2 > cx &&
+      y < cy2 &&
+      y2 > cy
+    ){
       count += 1;
     }
   });
@@ -125,8 +198,8 @@ function drawRoom(name,x,y,w,h){
   log(name,x,y,w,h);
   image.stroke("#ffffff").fill('none')
     .drawRectangle(x,y,x+w,y+h)
-  //  .drawText(((w/2)+x)-500,((h/2)+y)-500,name,'Center');
-  drawCenteredText(name,(w/2)+x,(h/2)+y);
+  //  .drawText(((w/2)+x)-500,((h+10)+y)-500,name,'Center');
+  drawCenteredText(name,(w/2)+x,(h+20)+y);
 }
 function drawCenteredText(text,x,y){
   image.fill('#ffffff').drawText(x-500,y-500,text,'Center');
@@ -147,7 +220,7 @@ function randi(min,max){
 function drawCastle(data,origx,origy){
   data.forEach(function(room){
     var roomDraw = drawRoom;
-    if(room.drawCallback) roomDraw = drawCallback;
+    if(room.draw) roomDraw = room.draw;
     var x = room.position.x + origx;
     var y = room.position.y + origy;
     var w = room.position.x2 - room.position.x; // can't just use x/y because they include the orig changes
