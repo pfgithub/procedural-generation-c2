@@ -55,7 +55,6 @@ var arr4= [
   " Hut",
   " Town",
   " Fort",
-  " Perserve",
   " Village",
   " Block"
 ]
@@ -89,13 +88,61 @@ var tp3 = [
   " Grocer",
   " Shop",
   " Guard",
-  " Law Firm",
+  " Barraster",
   " Library",
   " School",
-  " Horse Rental"
+  " Horse Rental",
+  " Armory",
+  " Leatherworkers",
+  " Bros. Shoppee"
 ]
+var pk1 = [ // park name bot
+  "Saint ",
+  "St. ",
+  "Emperor ",
+  "King ",
+  "Squire ",
+  "Overlord ",
+  "Priest ",
+  "Prince ",
+  ""
+];
+var pk2 = [
+  "James ",
+  "Jhon Ung ",
+  "E. ",
+  "Constantine ",
+  "Bill ",
+  "Edward ",
+  "Leer ",
+  "Great ",
+  "Mink ",
+  "Lewis ",
+  "Mane "
+];
+var pk3 = [
+  "II",
+  "I",
+  "III",
+  "V",
+  "IV",
+  "M.",
+  "G.",
+  "Rowling",
+  "A.",
+  "S.",
+  "R.",
+  "T."
+];
+var pk4 = [
+  " Park",
+  " Preserve",
+  " Green",
+  " Square",
+  " Block"
+];
 
-var image = gm('./resources/blueprint.jpg').noProfile().resize(1000,1000,"!").fontSize(20);
+var image = gm('./resources/blueprint.jpg').noProfile().resize(1000,1000,"!").fontSize(14);
 //var rooms = [
 //]
 /*var features = {
@@ -127,15 +174,77 @@ var houseJson = {
   "subgroups": []
 };
 
+
 var tpJson = {
   "name": "Trading Post",
   "size": new Size(60,110,60,110),
   "ammount": new Ammount(1,4),
   "nameCallback": function(){
-    return tp1[randi(0,tp1.length - 1)] + tp2[randi(0,tp2.length - 1)] + tp3[randi(0,arr4.length - 1)];
+    return tp1[randi(0,tp1.length - 1)] + tp2[randi(0,tp2.length - 1)] + tp3[randi(0,tp3.length - 1)];
   },
   "subgroups": []
-}
+};
+
+var treeJson = {
+  "name": "Tree", // how to fail json
+  "size": new Size(10,30,10,30),
+  "ammount": new Ammount(10,20),
+  "draw": function(name,x,y,w,h){
+    log(name,x,y,w,h);
+    var halfupdown = (h/2)+y
+    var halfleftright = (w/2)+x
+    var housein = 10;
+
+    image.stroke("#ffffff").fill('none')
+      //.drawRectangle(x,y,x+w,y+h) // debug
+      .drawLine(x,halfupdown,halfleftright,y) // roof / line
+      .drawLine(x+w,halfupdown,halfleftright,y) // roof \ line
+      .drawLine(x+w,halfupdown,x,halfupdown) // roof _ line
+      .drawLine(x,y+h,halfleftright,halfupdown) // roof / line
+      .drawLine(x+w,y+h,halfleftright,halfupdown) // roof \ line
+      .drawLine(x,y+h,x+w,y+h); // roof _ line
+  },
+  "subgroups": []
+};
+
+var parkJson = {
+  "name": "Park",
+  "size": new Size(60,110,60,110),
+  "ammount": new Ammount(1,4),
+  "draw": drawPark,
+  "nameCallback": function(){
+    return pk1[randi(0,pk1.length - 1)] + pk2[randi(0,pk2.length - 1)] + pk3[randi(0,pk3.length - 1)] + pk4[randi(0,[pk4].length - 1)];
+  },
+  "subgroups": [
+    treeJson
+  ]
+};
+
+var lillyJson = {
+  "name": "Lilly Pad", // how to fail json
+  "size": new Size(10,30,10,30),
+  "ammount": new Ammount(10,20),
+  "draw": function(name,x,y,w,h){
+    log(name,x,y,w,h);
+
+    image.stroke("#ffffff").fill('#2DC41A')
+      .drawEllipse(x+(w/2),y+(h/2),w/2,h/2);
+  },
+  "subgroups": []
+};
+
+var pondJson = {
+  "name": "Pond",
+  "size": new Size(60,110,60,110),
+  "ammount": new Ammount(1,4),
+  "draw": drawPond,
+  "nameCallback": function(){
+    return pk1[randi(0,pk1.length - 1)] + pk2[randi(0,pk2.length - 1)] + pk3[randi(0,pk3.length - 1)] + pk4[randi(0,[pk4].length - 1)];
+  },
+  "subgroups": [
+    lillyJson
+  ]
+};
 
 var features = [ // list of building groups
 
@@ -167,12 +276,8 @@ var features = [ // list of building groups
       },
       tpJson,
       houseJson,
-      {
-        "name": "Park", //
-        "size": new Size(60,110,60,110),
-        "ammount": new Ammount(1,4),
-        "subgroups": []
-      }
+      parkJson,
+      pondJson
     ]
   },
   {
@@ -187,7 +292,10 @@ var features = [ // list of building groups
       tpJson
     ]
   },
-  tpJson
+  pondJson,
+  treeJson,
+  tpJson,
+  parkJson
 ]
 var rooms = [ // TODO this should probably end up being a class with a .draw()
   //{"name": "Castle", "position": {"x":2,"y":2,"x2":10,"y2":50}, "subgroups": []} // subgroups position is NOT relative to main group position
@@ -278,16 +386,29 @@ function Ammount(a,b){
 Ammount.prototype.get = function(){
   return randi(this.ammount[0],this.ammount[1])
 }
-
-function drawRoom(name,x,y,w,h){
+function drawPark(name,x,y,w,h){
+  drawRoom(name,x,y,w,h,undefined,"#02B505");
+}
+function drawRoom(name,x,y,w,h,borderColor,fillColor){
   log(name,x,y,w,h);
-  image.stroke("#ffffff").fill('none')
+  var bc = "#ffffff";
+  var fc = 'none';
+  if(borderColor) bc = borderColor;
+  if(fillColor) fc = fillColor;
+  image.stroke(bc).fill(fc)
     .drawRectangle(x,y,x+w,y+h)
   //  .drawText(((w/2)+x)-500,((h+10)+y)-500,name,'Center');
   drawCenteredText(name,(w/2)+x,(h+20)+y);
 }
+function drawPond(name,x,y,w,h){
+  log(name,x,y,w,h);
+  image.stroke('#ffffff').fill('#00C8FF')
+    .drawEllipse(x+(w/2),y+(h/2),w/2,h/2);
+  //  .drawText(((w/2)+x)-500,((h+10)+y)-500,name,'Center');
+  drawCenteredText(name,(w/2)+x,(h+20)+y);
+}
 function drawCenteredText(text,x,y){
-  image.fill('#ffffff').drawText(x-500,y-500,text,'Center');
+  image.fill('#ffffff').stroke('#ffffff').drawText(x-500,y-500,text,'Center');
 }
 function save(){
   image
