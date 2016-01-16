@@ -1,6 +1,99 @@
 var fs = require('fs')
   , gm = require('gm').subClass({imageMagick: true});
 
+var  arr1 = [
+    "Fire",
+    "Hut",
+    "Ice",
+    "Townspeople",
+    "Forceful",
+    "Bacon",
+    "Boom",
+    "Howling",
+    "Ghost",
+    "Epic",
+    "Roman",
+    "Sweet",
+    "Money",
+    "Strong",
+    "Fiver",
+    "Wobbly",
+    "Power",
+    "Empire",
+    "Mega",
+    "Ultra",
+    "Edge",
+    "Wolfen",
+    "Gruber",
+    "Monkey"
+  ];
+var  arr2 = [
+    "wolf",
+    "tech",
+    "ingham",
+    "verse",
+    "star",
+    "dragon",
+    "stein",
+    "birds",
+    "limit",
+    " Edge",
+    "farmers"
+  ]
+var  arr3 = [
+    " Rock",
+    " Empire",
+    " Fort",
+    " Castle",
+    " Union",
+    " Commonwealth",
+    " Saga",
+    " Universe",
+    " Port"
+  ]
+var arr4= [
+  " Hut",
+  " Town",
+  " Fort",
+  " Perserve",
+  " Village",
+  " Block"
+]
+
+// trading post names
+var tp1 = [
+  "Shell",
+  "Quick",
+  "Cheap",
+  "Sale",
+  "Snail",
+  "Fast",
+  "Zippy",
+  "Flash",
+  "Speedy",
+  "Trade",
+  "Music"
+]
+var tp2 = [
+  "tastrophe",
+  "mainia",
+  "zapper",
+  "mail",
+  "male",
+  "zop",
+  "bash",
+  "boom"
+]
+var tp3 = [
+  " Shoppee",
+  " Grocer",
+  " Shop",
+  " Guard",
+  " Law Firm",
+  " Library",
+  " School",
+  " Horse Rental"
+]
 
 var image = gm('./resources/blueprint.jpg').noProfile().resize(1000,1000,"!").fontSize(20);
 //var rooms = [
@@ -14,98 +107,87 @@ var image = gm('./resources/blueprint.jpg').noProfile().resize(1000,1000,"!").fo
     {"name":"tower","expand":10}
   ]
 }*/
+var houseJson = {
+  "name": "House", // how to fail json
+  "size": new Size(30,50,30,50),
+  "ammount": new Ammount(10,20),
+  "draw": function(name,x,y,w,h){
+    log(name,x,y,w,h);
+    var halfupdown = (h/2)+y
+    var halfleftright = (w/2)+x
+    var housein = 10;
+
+    image.stroke("#ffffff").fill('none')
+      //.drawRectangle(x,y,x+w,y+h) // debug
+      .drawLine(x,halfupdown,halfleftright,y) // roof / line
+      .drawLine(x+w,halfupdown,halfleftright,y) // roof \ line
+      .drawLine(x+w,halfupdown,x,halfupdown) // roof _ line
+      .drawRectangle(x+housein,halfupdown,x+w-housein,y+h); // building
+  },
+  "subgroups": []
+};
+
+var tpJson = {
+  "name": "Trading Post",
+  "size": new Size(60,110,60,110),
+  "ammount": new Ammount(1,4),
+  "nameCallback": function(){
+    return tp1[randi(0,tp1.length - 1)] + tp2[randi(0,tp2.length - 1)] + tp3[randi(0,arr4.length - 1)];
+  },
+  "subgroups": []
+}
+
 var features = [ // list of building groups
+
   {
     "name": "Castle",
     "size": new Size(300,700,300,700),
     "ammount": new Ammount(1,4),
     "nameCallback": function(){
-      arr1 = [
-        "Fire",
-        "Hut",
-        "Ice",
-        "Townspeople",
-        "Forceful",
-        "Bacon",
-        "Boom",
-        "Howling",
-        "Ghost",
-        "Epic",
-        "Roman",
-        "Sweet",
-        "Money",
-        "Strong",
-        "Fiver",
-        "Wobbly",
-        "Power",
-        "Empire",
-        "Mega",
-        "Ultra",
-        "Edge",
-        "Wolfen",
-        "Gruber",
-        "Monkey"
-      ];
-      arr2 = [
-        "wolf",
-        "tech",
-        "ingham",
-        "verse",
-        "star",
-        "dragon",
-        "stein",
-        "birds",
-        "limit",
-        " Edge",
-        "farmers"
-      ]
-      arr3 = [
-        " Rock",
-        " Empire",
-        " Fort",
-        " Castle",
-        " Union",
-        " Commonwealth",
-        " Saga",
-        " Universe",
-        " Port"
-      ]
       return arr1[randi(0,arr1.length - 1)] + arr2[randi(0,arr2.length - 1)] + arr3[randi(0,arr3.length - 1)];
     },
     "subgroups": [
       {
-        "name": "Blacksmith", // how to fail json
+        "name": "Blacksmith",
         "size": new Size(50,100,50,100),
         "ammount": new Ammount(1,2),
-        "subgroups": []
-      },
-      {
-        "name": "Tower", // how to fail json
-        "size": new Size(50,100,50,100),
-        "ammount": new Ammount(1,2),
-        "subgroups": []
-      },
-      {
-        "name": "House", // how to fail json
-        "size": new Size(30,50,30,50),
-        "ammount": new Ammount(10,20),
-        "draw": function(name,x,y,w,h){
-          log(name,x,y,w,h);
-          var halfupdown = (h/2)+y
-          var halfleftright = (w/2)+x
-          var housein = 10;
-
-          image.stroke("#ffffff").fill('none')
-            //.drawRectangle(x,y,x+w,y+h) // debug
-            .drawLine(x,halfupdown,halfleftright,y) // roof / line
-            .drawLine(x+w,halfupdown,halfleftright,y) // roof \ line
-            .drawLine(x+w,halfupdown,x,halfupdown) // roof _ line
-            .drawRectangle(x+housein,halfupdown,x+w-housein,y+h); // building
+        "nameCallback": function(){
+          return tp1[randi(0,tp1.length - 1)] + tp2[randi(0,tp2.length - 1)] + " Blacksmith";
         },
+        "subgroups": []
+      },
+      {
+        "name": "Tower",
+        "size": new Size(50,100,50,100),
+        "ammount": new Ammount(1,2),
+        "nameCallback": function(){
+          return arr1[randi(0,arr1.length - 1)] + arr2[randi(0,arr2.length - 1)] + " Tower";
+        },
+        "subgroups": []
+      },
+      tpJson,
+      houseJson,
+      {
+        "name": "Park", //
+        "size": new Size(60,110,60,110),
+        "ammount": new Ammount(1,4),
         "subgroups": []
       }
     ]
-  }
+  },
+  {
+    "name": "Village",
+    "size": new Size(100,300,100,300),
+    "ammount": new Ammount(1,10),
+    "nameCallback": function(){
+      return arr1[randi(0,arr1.length - 1)] + arr2[randi(0,arr2.length - 1)] + arr4[randi(0,arr4.length - 1)];
+    },
+    "subgroups": [
+      houseJson,
+      tpJson
+    ]
+  },
+  tpJson
 ]
 var rooms = [ // TODO this should probably end up being a class with a .draw()
   //{"name": "Castle", "position": {"x":2,"y":2,"x2":10,"y2":50}, "subgroups": []} // subgroups position is NOT relative to main group position
@@ -208,8 +290,8 @@ function drawCenteredText(text,x,y){
   image.fill('#ffffff').drawText(x-500,y-500,text,'Center');
 }
 function save(){
-  image//.blur(1,1)
-    .write('./output.jpg', function (err) {
+  image
+    .write('./output.png', function (err) {
       if (err) throw err;
       console.log('done');
     });
